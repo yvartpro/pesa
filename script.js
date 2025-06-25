@@ -35,17 +35,24 @@ document.getElementById("txForm").addEventListener("submit", async (e) => {
   const to = document.getElementById("to").value.trim()
   const amount = parseInt(document.getElementById("amount").value)
   if (to && amount > 0) {
-    await fetch(apiURL + "/transaction", {
+   try{
+    const resp = await fetch(apiURL + "/transaction", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ from: wallet, to, amount })
     })
+    if(!resp.ok) throw new Error(resp)
+    const res = await resp.json()
+    console.log(res)
     document.getElementById("txMessage").textContent = "Transaction envoyée !"
     document.getElementById("to").value = ""
     document.getElementById("amount").value = ""
     loadBalance()
     renderTransactions()
     setTimeout(() => document.getElementById("txMessage").textContent = "", 3000)
+   }catch(err) {
+    console.error(err)
+   }
   }
 })
 
